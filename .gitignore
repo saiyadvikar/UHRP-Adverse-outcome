@@ -1,9 +1,28 @@
-# Binary cache files
+# Raw & Confidential Data Spreadsheets
+Data/
+*.xlsx
+*.xls
+*.csv
+
+# Generated Excel Reports
+Excel Reports/
+
+# Pre-indexed binary and lookup caches
 *.pkl
 
-# Python cache
+# Python Cache
 __pycache__/
 *.pyc
+
+# Temporary scratch & dev test scripts
+scratch/
+
+# Internal drafts & documentation
+Resources/
+*.docx
+*.pdf
+proposal_text.txt
+tool_text.txt
 
 # OS generated files
 .DS_Store
