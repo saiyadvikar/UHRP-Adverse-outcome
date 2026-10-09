@@ -659,8 +659,11 @@ with open(json_path, "w", encoding="utf-8") as f:
     json.dump(json_payload, f, indent=2)
 print(f"\n[5/5] Saved bmo_dashboard_data.json ({len(df_enriched)} cases).")
 
-# 2. Update BMO_Adverse_Outcome_Dashboard.html directly with fresh data
-html_path = os.path.join(BASE, "BMO_Adverse_Outcome_Dashboard.html")
+# 2. Update index.html directly with fresh data
+html_path = os.path.join(BASE, "index.html")
+if not os.path.exists(html_path):
+    html_path = os.path.join(BASE, "BMO_Adverse_Outcome_Dashboard.html")
+
 if os.path.exists(html_path):
     with open(html_path, "r", encoding="utf-8") as f:
         html_content = f.read()
@@ -678,13 +681,13 @@ if os.path.exists(html_path):
             
             with open(html_path, "w", encoding="utf-8") as f:
                 f.write(html_content)
-            print(f"  Updated BMO_Adverse_Outcome_Dashboard.html with live data and date ({today_str}) embedded!")
+            print(f"  Updated {os.path.basename(html_path)} with live data and date ({today_str}) embedded!")
         else:
-            print("  WARNING: Could not find closing </script> tag after const DATA in HTML.")
+            print(f"  WARNING: Could not find closing </script> tag after const DATA in {os.path.basename(html_path)}.")
     else:
-        print("  WARNING: Could not find 'const DATA =' in BMO_Adverse_Outcome_Dashboard.html.")
+        print(f"  WARNING: Could not find 'const DATA =' in {os.path.basename(html_path)}.")
 else:
-    print("  WARNING: BMO_Adverse_Outcome_Dashboard.html not found.")
+    print("  WARNING: index.html not found.")
 
 # 3. Auto-Generate All Excel Reports
 print("\n" + "-" * 60)
@@ -700,6 +703,37 @@ if os.path.exists(excel_script):
         print("All Excel reports successfully regenerated in Excel Reports/ folder.")
 else:
     print("WARNING: generate_styled_excel.py not found.")
+
+# 4. Auto-Push to GitHub
+print("\n" + "-" * 60)
+print("  PUSHING UPDATED PROJECT FILES TO GITHUB")
+print("-" * 60)
+try:
+    today_str = time.strftime("%d-%m-%Y")
+    # Stage modified files
+    subprocess.run(["git", "add", "."], cwd=BASE, check=True)
+    
+    # Check if there are changes to commit
+    status_proc = subprocess.run(["git", "status", "--porcelain"], cwd=BASE, capture_output=True, text=True, check=True)
+    if status_proc.stdout.strip():
+        commit_msg = f"Auto-update adverse outcome dashboard data: {today_str} ({len(df_enriched)} cases)"
+        subprocess.run(["git", "commit", "-m", commit_msg], cwd=BASE, check=True)
+        print(f"  Committed changes: '{commit_msg}'")
+        
+        push_proc = subprocess.run(["git", "push", "origin", "main"], cwd=BASE, capture_output=True, text=True)
+        if push_proc.returncode == 0:
+            print("  Successfully pushed updated project files to GitHub (origin/main)!")
+        else:
+            # Try plain git push if upstream is set
+            push_proc2 = subprocess.run(["git", "push"], cwd=BASE, capture_output=True, text=True)
+            if push_proc2.returncode == 0:
+                print("  Successfully pushed updated project files to GitHub!")
+            else:
+                print(f"  WARNING: Git push failed:\n{push_proc.stderr or push_proc.stdout or push_proc2.stderr}")
+    else:
+        print("  Git working tree clean. No changes to commit/push.")
+except Exception as e:
+    print(f"  WARNING: Auto git push encountered an error: {e}")
 
 print("=" * 60)
 print(f"  DASHBOARD GENERATION COMPLETE! Total Cases: {len(df_enriched)}")
