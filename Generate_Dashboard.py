@@ -143,15 +143,38 @@ def parse_adm_dates(row):
 df_adv[["adm_date", "adm_month"]] = df_adv.apply(parse_adm_dates, axis=1, result_type="expand")
 print(f"  Processed {len(df_adv)} active adverse outcome records.")
 
+def norm_block(blk):
+    if not blk or pd.isna(blk): return ""
+    b = str(blk).strip()
+    bl = b.lower()
+    if "jhirniya" in bl or "jhiranya" in bl: return "Jhiranya"
+    if "gogawa" in bl or "gogaon" in bl: return "Gogaon"
+    if "barwah" in bl or "barwaha" in bl: return "Barwaha"
+    if "bhagwanpura" in bl: return "Bhagwanpura"
+    if "bhikangaon" in bl or "bhikangao" in bl: return "Bhikangaon"
+    if "kasrawad" in bl: return "Kasrawad"
+    if "maheshwar" in bl: return "Maheshwar"
+    if "segaon" in bl or "segao" in bl: return "Segaon"
+    if "khargone" in bl or "oon" in bl: return "Khargone"
+    return b
+
 # ─────────────────────────────────────────────────────────────
-# 2. LOAD LOCATION HIERARCHY
+# 2. LOAD LOCATION HIERARCHY & PERSONNEL DIRECTORIES
 # ─────────────────────────────────────────────────────────────
-loc_path = find_file(["Resources/Location Hirarchy.xlsx", "Resources/Location*.xlsx", "Location Hirarchy.xlsx"])
+loc_path = find_file([
+    "Resources/Location Hirarchy and HR.xlsx",
+    "Resources/Location Hirarchy*.xlsx",
+    "Resources/Location*.xlsx",
+    "Location Hirarchy and HR.xlsx",
+    "Location Hirarchy*.xlsx",
+    "Location*.xlsx",
+    "Data/Location*.xlsx"
+])
 if not loc_path:
-    print("ERROR: Could not find Location Hirarchy.xlsx in Resources/ or current folder!")
+    print("ERROR: Could not find Location Hierarchy file in Resources/ or current folder!")
     sys.exit(1)
 
-print(f"\n[2/5] Loading Location Hierarchy from: {os.path.basename(loc_path)}")
+print(f"\n[2/5] Loading Location Hierarchy & Personnel from: {os.path.basename(loc_path)}")
 xl_loc = pd.ExcelFile(loc_path)
 df_vill = xl_loc.parse("Village list", skiprows=1)
 df_anm = xl_loc.parse("ANM", skiprows=2)
@@ -163,28 +186,97 @@ df_cho["Contact_clean"] = df_cho["Contact No"].apply(clean_phone)
 anm_by_sc = {}
 for _, r in df_anm.iterrows():
     k = norm_str(r.get("Sub-Health Facility"))
-    if k and k not in anm_by_sc:
-        anm_by_sc[k] = {"name": str(r.get("ANM Name", "")).strip(), "phone": r["Contact_clean"], "sc": str(r.get("Sub-Health Facility", "")), "blk": str(r.get("Block Name", ""))}
+    name = clean_val(r.get("ANM Name"))
+    ph = r["Contact_clean"]
+    sc = clean_val(r.get("Sub-Health Facility"))
+    blk = norm_block(clean_val(r.get("Block Name")))
+    if k and name:
+        if k not in anm_by_sc or (not anm_by_sc[k]["phone"] and ph):
+            anm_by_sc[k] = {"name": name, "phone": ph, "sc": sc, "blk": blk}
 
 cho_by_sc = {}
 for _, r in df_cho.iterrows():
     k = norm_str(r.get("Sub Health Facility"))
-    if k and k not in cho_by_sc:
-        cho_by_sc[k] = {"name": str(r.get("Name of CHO", "")).strip(), "phone": r["Contact_clean"], "sc": str(r.get("Sub Health Facility", "")), "blk": str(r.get("Block Name", ""))}
+    name = clean_val(r.get("Name of CHO"))
+    ph = r["Contact_clean"]
+    sc = clean_val(r.get("Sub Health Facility"))
+    blk = norm_block(clean_val(r.get("Block Name")))
+    if k and name:
+        if k not in cho_by_sc or (not cho_by_sc[k]["phone"] and ph):
+            cho_by_sc[k] = {"name": name, "phone": ph, "sc": sc, "blk": blk}
 
 anm_by_name = {}
 for _, r in df_anm.iterrows():
-    k = norm_name(r.get("ANM Name"))
+    name = clean_val(r.get("ANM Name"))
+    k = norm_name(name)
     ph = r["Contact_clean"]
     if k and ph and k not in anm_by_name:
-        anm_by_name[k] = {"name": str(r.get("ANM Name", "")).strip(), "phone": ph}
+        anm_by_name[k] = {"name": name, "phone": ph}
 
 cho_by_name = {}
 for _, r in df_cho.iterrows():
-    k = norm_name(r.get("Name of CHO"))
+    name = clean_val(r.get("Name of CHO"))
+    k = norm_name(name)
     ph = r["Contact_clean"]
     if k and ph and k not in cho_by_name:
-        cho_by_name[k] = {"name": str(r.get("Name of CHO", "")).strip(), "phone": ph}
+        cho_by_name[k] = {"name": name, "phone": ph}
+
+# Supplement CHO & personnel from HR Directory sheet if present
+hr_sheets = [s for s in xl_loc.sheet_names if "hr" in s.lower() and "cho" not in s.lower() and "anm" not in s.lower()]
+if hr_sheets:
+    df_hr = xl_loc.parse(hr_sheets[0])
+    phone_col = "Mobile Number" if "Mobile Number" in df_hr.columns else ("Contact No" if "Contact No" in df_hr.columns else None)
+    fac_col = "Facility Name" if "Facility Name" in df_hr.columns else ("Sub Health Facility" if "Sub Health Facility" in df_hr.columns else None)
+    name_col = "HR Name" if "HR Name" in df_hr.columns else ("Name of CHO" if "Name of CHO" in df_hr.columns else None)
+    desig_col = "Designation" if "Designation" in df_hr.columns else None
+    taluka_col = "Taluka" if "Taluka" in df_hr.columns else ("Block Name" if "Block Name" in df_hr.columns else None)
+    
+    if phone_col and fac_col and name_col:
+        df_hr["Contact_clean"] = df_hr[phone_col].apply(clean_phone)
+        hr_cho_added = 0
+        for _, r in df_hr.iterrows():
+            desig = str(r.get(desig_col, "")).strip().lower() if desig_col else "cho"
+            name = clean_val(r.get(name_col))
+            ph = r["Contact_clean"]
+            sc = clean_val(r.get(fac_col))
+            blk = norm_block(clean_val(r.get(taluka_col)))
+            k = norm_str(sc)
+            if "cho" in desig:
+                if k and name:
+                    if k not in cho_by_sc or (not cho_by_sc[k]["phone"] and ph):
+                        cho_by_sc[k] = {"name": name, "phone": ph, "sc": sc, "blk": blk}
+                        hr_cho_added += 1
+                nk = norm_name(name)
+                if nk and ph and nk not in cho_by_name:
+                    cho_by_name[nk] = {"name": name, "phone": ph}
+            elif "anm" in desig:
+                if k and name:
+                    if k not in anm_by_sc or (not anm_by_sc[k]["phone"] and ph):
+                        anm_by_sc[k] = {"name": name, "phone": ph, "sc": sc, "blk": blk}
+                nk = norm_name(name)
+                if nk and ph and nk not in anm_by_name:
+                    anm_by_name[nk] = {"name": name, "phone": ph}
+        if hr_cho_added > 0:
+            print(f"  Supplemented {hr_cho_added} additional CHO contacts from {hr_sheets[0]}.")
+
+# Pre-index Subcentre to Block mapping from all authoritative sources
+sc_to_blk = {}
+for _, r in df_vill.iterrows():
+    sc = clean_val(r.get("Subcentre Name"))
+    blk = norm_block(clean_val(r.get("Block Name")))
+    if sc and blk:
+        k = norm_str(sc)
+        if k and k not in sc_to_blk:
+            sc_to_blk[k] = blk
+
+for k, val in anm_by_sc.items():
+    if k and val.get("blk") and k not in sc_to_blk:
+        sc_to_blk[k] = val["blk"]
+
+for k, val in cho_by_sc.items():
+    if k and val.get("blk") and k not in sc_to_blk:
+        sc_to_blk[k] = val["blk"]
+
 
 # ─────────────────────────────────────────────────────────────
 # 3. LOAD OR BUILD FULL ANC & HRP REGISTRY CACHES
@@ -478,15 +570,21 @@ for idx, r in df_adv.iterrows():
 
     # Fallback to Out of District if unmapped
     if not assigned_block:
-        assigned_block = "Out of District"
-        is_khargone = False
-        assigned_district = "Out of District"
-        sub_area = "Unmapped Location"
-        match_status = "Unmapped / Out of District"
+        target_check = norm_str(assigned_sc if assigned_sc else sc_raw)
+        if is_khargone and target_check and target_check in sc_to_blk:
+            assigned_block = sc_to_blk[target_check]
+            is_khargone = True
+            assigned_district = "Khargone (West Nimar)"
+            sub_area = f"{assigned_sc if assigned_sc else sc_raw} (Hierarchy SC)"
+            match_status = "Matched via Location Hierarchy"
+        else:
+            assigned_block = "Out of District"
+            is_khargone = False
+            assigned_district = "Out of District"
+            sub_area = "Unmapped Location"
+            match_status = "Unmapped / Out of District"
 
-    if assigned_block.lower() == "jhirniya": assigned_block = "Jhiranya"
-    elif assigned_block.lower() == "gogawa": assigned_block = "Gogaon"
-    elif assigned_block.lower() == "barwah": assigned_block = "Barwaha"
+    assigned_block = norm_block(assigned_block)
 
     # Frontline Workers
     anm_name, anm_phone, cho_name, cho_phone, asha_name = "", "", "", "", ""
@@ -501,12 +599,20 @@ for idx, r in df_adv.iterrows():
 
     target_sc = assigned_sc if assigned_sc else sc_raw
     sc_k = norm_str(target_sc)
+    if is_khargone and sc_k and (not assigned_block or assigned_block == "Out of District"):
+        if sc_k in sc_to_blk:
+            assigned_block = norm_block(sc_to_blk[sc_k])
+
     if sc_k and sc_k in anm_by_sc:
         if not anm_name or anm_name == "Unrecorded (DH Direct Case)": anm_name = anm_by_sc[sc_k]["name"]
         if not anm_phone: anm_phone = anm_by_sc[sc_k]["phone"]
+        if is_khargone and (not assigned_block or assigned_block == "Out of District") and anm_by_sc[sc_k]["blk"]:
+            assigned_block = norm_block(anm_by_sc[sc_k]["blk"])
     if sc_k and sc_k in cho_by_sc:
         if not cho_name or cho_name == "Unrecorded (DH Direct Case)": cho_name = cho_by_sc[sc_k]["name"]
         if not cho_phone: cho_phone = cho_by_sc[sc_k]["phone"]
+        if is_khargone and (not assigned_block or assigned_block == "Out of District") and cho_by_sc[sc_k]["blk"]:
+            assigned_block = norm_block(cho_by_sc[sc_k]["blk"])
 
     if anm_name and not anm_phone:
         nk = norm_name(anm_name)
