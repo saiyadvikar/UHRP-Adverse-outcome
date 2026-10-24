@@ -105,7 +105,9 @@ for c in df_raw.columns:
     elif "vill" in clean_c:
         col_map[c] = "village"
     elif "sub" in clean_c and "centre" in clean_c:
-        col_map[c] = "Sub centre"
+        col_map[c] = "Referred from"
+    elif "refer" in clean_c or "reffered" in clean_c:
+        col_map[c] = "Referred from"
     elif clean_c == "block":
         col_map[c] = "Block"
     elif "diagnos" in clean_c:
@@ -124,7 +126,28 @@ df_adv = df_raw.rename(columns=col_map).copy()
 # Filter valid rows (must have Patient Name or Diagnosis or Address)
 pname_col = "Patient Name" if "Patient Name" in df_adv.columns else df_adv.columns[3]
 df_adv = df_adv[df_adv[pname_col].fillna("").astype(str).str.strip().ne("")].copy()
+
+# Filter out ONLY plain pre-eclampsia cases (User rule: retain severe preeclampsia, eclampsia, post partum eclampsia, severe anemia, SCD crisis)
+def is_plain_preeclampsia(diag_raw):
+    d = str(diag_raw).lower()
+    if any(k in d for k in ["scd", "sickle", "hbss", "anemia", "anaemia", "convulsion", "seizure", "fit", "status"]):
+        return False
+    if "severe" in d:
+        return False
+    is_preeclamp = "preeclampsia" in d or "pre eclampsia" in d or "pre-eclampsia" in d or "pih" in d
+    clean_d = re.sub(r"\bpre[\s-]?eclampsia\b", "", d).strip()
+    clean_d = re.sub(r"\bpih\b", "", clean_d).strip()
+    if "eclampsia" in clean_d:
+        return False
+    if is_preeclamp:
+        return True
+    return False
+
+pe_mask = df_adv["Diagnosis"].apply(is_plain_preeclampsia) if "Diagnosis" in df_adv.columns else pd.Series([False]*len(df_adv))
+filtered_pe_count = int(pe_mask.sum())
+df_adv = df_adv[~pe_mask].copy()
 df_adv["Sr No"] = range(1, len(df_adv) + 1)
+print(f"  Filtered out {filtered_pe_count} plain pre-eclampsia cases (retained {len(df_adv)} severe & critical adverse cases).")
 
 df_adv["mp_clean"] = df_adv.get("MPID", pd.Series([""] * len(df_adv))).apply(clean_val)
 df_adv["mob_clean"] = df_adv.get("mob num", pd.Series([""] * len(df_adv))).apply(clean_phone)
@@ -157,6 +180,75 @@ def norm_block(blk):
     if "segaon" in bl or "segao" in bl: return "Segaon"
     if "khargone" in bl or "oon" in bl: return "Khargone"
     return b
+
+FACILITY_TO_BLOCK = {
+    "CHC Jhiranya": "Jhiranya",
+    "PHC Rayalbeda": "Jhiranya",
+    "CHC Bhagwanpura": "Bhagwanpura",
+    "PHC Sirvel": "Bhagwanpura",
+    "PHC Bistan": "Bhagwanpura",
+    "PHC Mandawkheda": "Bhagwanpura",
+    "CHC Sanawad": "Barwaha",
+    "PHC Bediya": "Barwaha",
+    "CHC Bhikangaon": "Bhikangaon",
+    "PHC Bamnala": "Bhikangaon",
+    "CHC Maheshwar": "Maheshwar",
+    "CHC Mandleshwar": "Maheshwar",
+    "PHC Padliya Khurd": "Maheshwar",
+    "CHC Gogaon": "Gogaon",
+    "PHC Mohna": "Gogaon",
+    "PHC Oon": "Khargone",
+    "PHC Balakwada": "Kasrawad",
+    "CHC Kasrawad": "Kasrawad",
+    "CHC Segaon": "Segaon",
+    "PHC Keli": "Segaon",
+    "CHC Thikri (Barwani)": "Out of District",
+    "PHC Nagalwadi (Barwani)": "Out of District",
+    "PHC Julwaniya (Barwani)": "Out of District",
+}
+
+def standardize_referral_facility(val):
+    if not val or pd.isna(val) or str(val).strip().lower() in ["nan", "none", "null", "", "no", "direct entry"]:
+        return "Direct DH Arrival (No Peripheral Referral)"
+    s = str(val).lower().strip()
+    s = re.sub(r"\b(pnc\s+day\s+\d+|refer|referral|transfer)\b", "", s).strip()
+    s = re.sub(r"\s+", " ", s).strip()
+    if "jhirniya" in s or "jhiranya" in s: return "CHC Jhiranya"
+    if "bhagwanpura" in s: return "CHC Bhagwanpura"
+    if "sanawad" in s: return "CHC Sanawad"
+    if "bhikangao" in s or "bhikangaon" in s: return "CHC Bhikangaon"
+    if "maheshwar" in s: return "CHC Maheshwar"
+    if "mandleshwar" in s: return "CHC Mandleshwar"
+    if "gogawa" in s or "gogaon" in s: return "CHC Gogaon"
+    if "kasrawad" in s: return "CHC Kasrawad"
+    if "segaon" in s or "segao" in s: return "CHC Segaon"
+    if "thikri" in s: return "CHC Thikri (Barwani)"
+    if "nagalwadi" in s: return "PHC Nagalwadi (Barwani)"
+    if "julwaniya" in s: return "PHC Julwaniya (Barwani)"
+    if "sirvel" in s: return "PHC Sirvel"
+    if "keli" in s: return "PHC Keli"
+    if "rayalbeda" in s: return "PHC Rayalbeda"
+    if "padliya" in s: return "PHC Padliya Khurd"
+    if "oon" in s: return "PHC Oon"
+    if "badiya" in s or "bediya" in s: return "PHC Bediya"
+    if "balakwada" in s: return "PHC Balakwada"
+    if "bamnala" in s: return "PHC Bamnala"
+    if "bistan" in s: return "PHC Bistan"
+    if "mandawkheda" in s or "mandwakheda" in s: return "PHC Mandawkheda"
+    if "mohna" in s: return "PHC Mohna"
+    prefix = ""
+    if "chc" in s:
+        prefix = "CHC "
+        s = s.replace("chc", "").strip()
+    elif "phc" in s:
+        prefix = "PHC "
+        s = s.replace("phc", "").strip()
+    elif "shc" in s:
+        prefix = "SHC "
+        s = s.replace("shc", "").strip()
+    cleaned = prefix + s.title()
+    return cleaned if cleaned.strip() else "Direct DH Arrival (No Peripheral Referral)"
+
 
 # ─────────────────────────────────────────────────────────────
 # 2. LOAD LOCATION HIERARCHY & PERSONNEL DIRECTORIES
@@ -382,6 +474,7 @@ for idx, r in df_adv.iterrows():
     name = str(r.get("Patient Name", "")).strip()
     addr = str(r.get("Address", "")).strip() if pd.notna(r.get("Address")) else ""
     vill_raw = str(r.get("village", "")).strip() if pd.notna(r.get("village")) else ""
+    ref_raw = str(r.get("Referred from", "")).strip() if pd.notna(r.get("Referred from")) else ""
     sc_raw = str(r.get("Sub centre", "")).strip() if pd.notna(r.get("Sub centre")) else ""
     blk_raw = str(r.get("Block", "")).strip() if pd.notna(r.get("Block")) else ""
     diag_raw = str(r.get("Diagnosis", "")).strip() if pd.notna(r.get("Diagnosis")) else "Unspecified"
@@ -392,6 +485,8 @@ for idx, r in df_adv.iterrows():
     mp = r["mp_clean"]
     adm_date = r["adm_date"]
     adm_month = r["adm_month"]
+
+    referred_facility = standardize_referral_facility(ref_raw)
 
     cat, sub_type = categorize_clinical(diag_raw)
 
@@ -441,7 +536,7 @@ for idx, r in df_adv.iterrows():
     match_status = ""
 
     # Check Out-of-District first
-    full_text = f"{addr} {sc_raw} {blk_raw}".lower()
+    full_text = f"{addr} {vill_raw} {ref_raw} {sc_raw} {blk_raw}".lower()
     is_out, out_dist, out_blk, out_sub, out_status = check_out_of_district(full_text)
     if is_out:
         is_khargone = False
@@ -577,6 +672,13 @@ for idx, r in df_adv.iterrows():
             assigned_district = "Khargone (West Nimar)"
             sub_area = f"{assigned_sc if assigned_sc else sc_raw} (Hierarchy SC)"
             match_status = "Matched via Location Hierarchy"
+        elif referred_facility in FACILITY_TO_BLOCK and FACILITY_TO_BLOCK[referred_facility] != "Out of District":
+            assigned_block = FACILITY_TO_BLOCK[referred_facility]
+            is_khargone = True
+            assigned_district = "Khargone (West Nimar)"
+            if not sub_area:
+                sub_area = f"Referred from {referred_facility}"
+            match_status = f"Matched via Referral Facility ({referred_facility})"
         else:
             assigned_block = "Out of District"
             is_khargone = False
@@ -687,6 +789,9 @@ for idx, r in df_adv.iterrows():
         "stated_address": addr,
         "stated_subcentre": sc_raw if sc_raw else "Not Specified",
         "stated_block": blk_raw if blk_raw else "Missing",
+        "referred_from_raw": ref_raw,
+        "referred_facility": referred_facility,
+        "referred_facility_block": FACILITY_TO_BLOCK.get(referred_facility, ""),
         "diagnosis_raw": diag_raw,
         "clinical_category": cat,
         "clinical_sub_type": sub_type,
@@ -753,7 +858,9 @@ json_payload = {
         "neonatal_deaths": int((df_enriched["baby_status_norm"] == "Early Neonatal Death").sum()),
         "sncu_transfers": int(df_enriched["is_sncu_admission"].sum()),
         "hrp_matched_count": int(df_enriched["hrp_matched"].sum()),
-        "months": sorted(list(df_enriched["admission_month"].unique()))
+        "months": sorted(list(df_enriched["admission_month"].unique())),
+        "referral_facilities": sorted(list(df_enriched["referred_facility"].unique())),
+        "facility_to_block": FACILITY_TO_BLOCK
     },
     "block_summary": blk_summary.to_dict(orient="records"),
     "cases": df_enriched.to_dict(orient="records")

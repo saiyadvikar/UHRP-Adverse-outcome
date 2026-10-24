@@ -89,10 +89,10 @@ SC_HEADERS = [
     "Maternal Death", "SNCU transfer", "HRP Flagged"
 ]
 
-# Patient Linelist headers — 16 columns A-P
+# Patient Linelist headers — 17 columns A-Q
 LL_HEADERS = [
     "Sr No", "Assigned Block", "Assigned Subcentre", "Village / Area",
-    "Patient Name", "Mobile Number", "MP ID (RCH ID)",
+    "Referred From Facility", "Patient Name", "Mobile Number", "MP ID (RCH ID)",
     "Date of Admission", "Admission Month", "DH Diagnosis", "Clinical Category",
     "HRP flagged in ANMOL", "HRP High Risk Category",
     "Perinatal Outcome", "Mother Status", "SNCU Transfer"
@@ -177,6 +177,7 @@ def populate_linelist_sheet(ws, sheet_cases):
         row_vals = [
             c.get("sr_no", ri - 1), blk,
             c.get("assigned_subcentre", ""), c.get("assigned_village", ""),
+            c.get("referred_facility", "Direct DH Arrival (No Peripheral Referral)"),
             c.get("patient_name", ""),  c.get("mobile_number", ""),
             c.get("mpid", ""),
             c.get("admission_date", ""), c.get("admission_month", ""),
@@ -201,21 +202,25 @@ def populate_linelist_sheet(ws, sheet_cases):
                     cell.fill = fill_out_block; cell.font = font_out_block
             elif ci == 5:
                 cell.font = font_bold
-            elif ci in [6, 7]:
+                if "Direct" in str(cell.value):
+                    cell.font = font_regular
+            elif ci == 6:
+                cell.font = font_bold
+            elif ci in [7, 8]:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
                 cell.font = font_mono
-            elif ci in [8, 9]:
+            elif ci in [9, 10]:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
-            elif ci in [10, 11]:
+            elif ci in [11, 12]:
                 if "Preeclampsia" in cat:  cell.fill = fill_preeclamp; cell.font = font_preeclamp
                 elif "Eclampsia" in cat:   cell.fill = fill_eclamp;    cell.font = font_eclamp
                 elif "Anemia" in cat:      cell.fill = fill_anemia;    cell.font = font_anemia
                 elif "Sickle" in cat:     cell.fill = fill_scd;       cell.font = font_scd
-            elif ci == 12:
+            elif ci == 13:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
                 if c.get("hrp_matched"): cell.fill = fill_hrp_yes; cell.font = font_hrp_yes
                 else:                    cell.fill = fill_hrp_no;  cell.font = font_hrp_no
-            elif ci == 14:
+            elif ci == 15:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
                 if baby_st == "Live Birth":
                     cell.fill = fill_live;       cell.font = font_live
@@ -223,7 +228,7 @@ def populate_linelist_sheet(ws, sheet_cases):
                     cell.fill = fill_stillbirth; cell.font = font_stillbirth
                 elif "Neonatal Death" in baby_st:
                     cell.fill = fill_neodeath;   cell.font = font_neodeath
-            elif ci == 15:
+            elif ci == 16:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
                 if mother_st == "Maternal Death":
                     cell.fill = fill_matdeath; cell.font = font_matdeath
@@ -231,7 +236,7 @@ def populate_linelist_sheet(ws, sheet_cases):
                     cell.fill = fill_referral; cell.font = font_referral
                 elif "Survived" in mother_st:
                     cell.fill = fill_live;     cell.font = font_live
-            elif ci == 16:
+            elif ci == 17:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
                 if c.get("is_sncu_admission"): cell.fill = fill_sncu_yes; cell.font = font_sncu_yes
                 else:                          cell.fill = fill_sncu_no;  cell.font = font_sncu_no
