@@ -195,60 +195,171 @@ def norm_block(blk):
     return b
 
 FACILITY_TO_BLOCK = {
-    "CHC Jhiranya": "Jhiranya",
-    "PHC Rayalbeda": "Jhiranya",
-    "CHC Bhagwanpura": "Bhagwanpura",
-    "PHC Sirvel": "Bhagwanpura",
-    "PHC Bistan": "Bhagwanpura",
-    "PHC Mandawkheda": "Bhagwanpura",
+    # Barwaha / Sanawad
+    "CH BARWAHA": "Barwaha",
+    "CH Barwaha": "Barwaha",
+    "CH SANAVAD": "Barwaha",
+    "CH Sanawad": "Barwaha",
+    "CHC Bagod": "Barwaha",
     "CHC Sanawad": "Barwaha",
+    "PHC Badud": "Barwaha",
+    "PHC Balwada": "Barwaha",
+    "PHC Bangerda": "Barwaha",
+    "PHC Bedia": "Barwaha",
     "PHC Bediya": "Barwaha",
+    "PHC Dhakalgaon": "Barwaha",
+    "PHC Jethway": "Barwaha",
+    "PHC Kanapur": "Barwaha",
+    "PHC Katkut": "Barwaha",
+    "PHC Mardana": "Barwaha",
+    
+    # Bhagwanpura
+    "CHC Bhagwanpura": "Bhagwanpura",
+    "PHC Bhagyapur": "Bhagwanpura",
+    "PHC Devnaliya": "Bhagwanpura",
+    "PHC Mandawkheda": "Bhagwanpura",
+    "PHC Mohana": "Bhagwanpura",
+    "PHC Mohna": "Bhagwanpura",
+    "PHC Pipaljhopa": "Bhagwanpura",
+    "PHC Sirvel": "Bhagwanpura",
+    
+    # Bhikangaon
     "CHC Bhikangaon": "Bhikangaon",
+    "PHC Andad": "Bhikangaon",
     "PHC Bamnala": "Bhikangaon",
+    "PHC Doudwa": "Bhikangaon",
+    "PHC Goridiya": "Bhikangaon",
+    "PHC Kaldha": "Bhikangaon",
+    "PHC Rodiya": "Bhikangaon",
+    "PHC Satwada": "Bhikangaon",
+    
+    # Gogaon
+    "CHC Gogaon": "Gogaon",
+    "CHC Gogawa": "Gogaon",
+    "PHC Badgaon": "Gogaon",
+    "PHC Behrampur": "Gogaon",
+    "PHC Bistan": "Gogaon",
+    "PHC Bisthan": "Gogaon",
+    "PHC Kotha Khurd": "Gogaon",
+    "PHC Nagziri": "Gogaon",
+    "PHC Umarkhali": "Gogaon",
+    
+    # Jhiranya
+    "CHC Jhiranya": "Jhiranya",
+    "CHC Jhirnya": "Jhiranya",
+    "PHC Helapadawa": "Jhiranya",
+    "PHC Ratanpur": "Jhiranya",
+    "PHC Rayalbeda": "Jhiranya",
+    "PHC Shivna": "Jhiranya",
+    
+    # Kasrawad
+    "CHC Kasrawad": "Kasrawad",
+    "PHC Balakwada": "Kasrawad",
+    "PHC Balsamud": "Kasrawad",
+    "PHC Borawan": "Kasrawad",
+    "PHC Khamkheda": "Kasrawad",
+    "PHC MAGARKHEDI": "Kasrawad",
+    "PHC Multhaan": "Kasrawad",
+    "PHC Satkur": "Kasrawad",
+    
+    # Khargone
+    "DH KHARGONE": "Khargone",
+    "DH Khargone": "Khargone",
+    "CHC Barud": "Khargone",
+    "PHC Dongergaon": "Khargone",
+    "PHC Ghegaon": "Khargone",
+    "PHC Mengaon": "Khargone",
+    "PHC Oon": "Khargone",
+    "PHC Raibidpura": "Khargone",
+    "PHC Temla": "Khargone",
+    "UPHC Aurangpura": "Khargone",
+    "UPHC Indira Nagar": "Khargone",
+    "UPHC Khargone": "Khargone",
+    "UPHC Sukhpuri": "Khargone",
+    
+    # Maheshwar
     "CHC Maheshwar": "Maheshwar",
     "CHC Mandleshwar": "Maheshwar",
+    "PHC Ashapur": "Maheshwar",
+    "PHC Bardiya": "Maheshwar",
+    "PHC Choli": "Maheshwar",
+    "PHC Dhargaon": "Maheshwar",
+    "PHC Kakarda": "Maheshwar",
+    "PHC Karhi": "Maheshwar",
+    "PHC Kawdia": "Maheshwar",
+    "PHC Nandra": "Maheshwar",
+    "PHC Padliya": "Maheshwar",
     "PHC Padliya Khurd": "Maheshwar",
-    "CHC Gogaon": "Gogaon",
-    "PHC Mohna": "Gogaon",
-    "PHC Oon": "Khargone",
-    "PHC Balakwada": "Kasrawad",
-    "CHC Kasrawad": "Kasrawad",
+    "PHC Pipliya Bujurg": "Maheshwar",
+    "PHC Somakhedi": "Maheshwar",
+    
+    # Segaon
     "CHC Segaon": "Segaon",
     "PHC Keli": "Segaon",
+    "PHC Shrikhandi": "Segaon",
+    
+    # Out of District
     "CHC Thikri (Barwani)": "Out of District",
     "PHC Nagalwadi (Barwani)": "Out of District",
     "PHC Julwaniya (Barwani)": "Out of District",
 }
 
 def standardize_referral_facility(val):
-    if not val or pd.isna(val) or str(val).strip().lower() in ["nan", "none", "null", "", "no", "direct entry"]:
+    if not val or pd.isna(val) or str(val).strip().lower() in ["nan", "none", "null", "", "no", "direct entry", "blank"]:
         return "Direct DH Arrival (No Peripheral Referral)"
     s = str(val).lower().strip()
     s = re.sub(r"\b(pnc\s+day\s+\d+|refer|referral|transfer)\b", "", s).strip()
     s = re.sub(r"\s+", " ", s).strip()
-    if "jhirniya" in s or "jhiranya" in s: return "CHC Jhiranya"
-    if "bhagwanpura" in s: return "CHC Bhagwanpura"
-    if "sanawad" in s: return "CHC Sanawad"
-    if "bhikangao" in s or "bhikangaon" in s: return "CHC Bhikangaon"
-    if "maheshwar" in s: return "CHC Maheshwar"
-    if "mandleshwar" in s: return "CHC Mandleshwar"
-    if "gogawa" in s or "gogaon" in s: return "CHC Gogaon"
-    if "kasrawad" in s: return "CHC Kasrawad"
-    if "segaon" in s or "segao" in s: return "CHC Segaon"
+    if not s:
+        return "Direct DH Arrival (No Peripheral Referral)"
+
+    # Out of District
     if "thikri" in s: return "CHC Thikri (Barwani)"
     if "nagalwadi" in s: return "PHC Nagalwadi (Barwani)"
     if "julwaniya" in s: return "PHC Julwaniya (Barwani)"
-    if "sirvel" in s: return "PHC Sirvel"
-    if "keli" in s: return "PHC Keli"
+
+    # Jhiranya
+    if "jhirniya" in s or "jhiranya" in s or "jhirnya" in s: return "CHC Jhirnya"
     if "rayalbeda" in s: return "PHC Rayalbeda"
-    if "padliya" in s: return "PHC Padliya Khurd"
-    if "oon" in s: return "PHC Oon"
-    if "badiya" in s or "bediya" in s: return "PHC Bediya"
-    if "balakwada" in s: return "PHC Balakwada"
-    if "bamnala" in s: return "PHC Bamnala"
-    if "bistan" in s: return "PHC Bistan"
+
+    # Bhagwanpura
+    if "bhagwanpura" in s: return "CHC Bhagwanpura"
+    if "sirvel" in s: return "PHC Sirvel"
     if "mandawkheda" in s or "mandwakheda" in s: return "PHC Mandawkheda"
-    if "mohna" in s: return "PHC Mohna"
+    if "mohna" in s or "mohana" in s: return "PHC Mohana"
+
+    # Barwaha / Sanawad
+    if "sanawad" in s or "sanavad" in s: return "CH Sanawad"
+    if "barwaha" in s: return "CH Barwaha"
+    if "bagod" in s: return "CHC Bagod"
+    if "badiya" in s or "bediya" in s or "bedia" in s: return "PHC Bedia"
+
+    # Bhikangaon
+    if "bhikangao" in s or "bhikangaon" in s: return "CHC Bhikangaon"
+    if "bamnala" in s: return "PHC Bamnala"
+
+    # Gogaon
+    if "gogawa" in s or "gogaon" in s: return "CHC Gogawa"
+    if "bistan" in s or "bisthan" in s: return "PHC Bisthan"
+
+    # Kasrawad
+    if "kasrawad" in s: return "CHC Kasrawad"
+    if "balakwada" in s: return "PHC Balakwada"
+
+    # Khargone
+    if "barud" in s: return "CHC Barud"
+    if "oon" in s: return "PHC Oon"
+    if "dh" in s or "khargone" in s: return "DH Khargone"
+
+    # Maheshwar
+    if "mandleshwar" in s: return "CHC Mandleshwar"
+    if "maheshwar" in s: return "CHC Maheshwar"
+    if "padliya" in s: return "PHC Padliya Khurd"
+
+    # Segaon
+    if "segaon" in s or "segao" in s: return "CHC Segaon"
+    if "keli" in s: return "PHC Keli"
+
     prefix = ""
     if "chc" in s:
         prefix = "CHC "
@@ -895,11 +1006,13 @@ if os.path.exists(html_path):
         html_content = f.read()
 
     idx1 = html_content.find("const DATA =")
+    if idx1 == -1:
+        idx1 = html_content.find("window.DATA =")
     if idx1 != -1:
         idx2 = html_content.find("</script>", idx1)
         if idx2 != -1:
             json_str = json.dumps(json_payload, indent=2)
-            html_content = html_content[:idx1] + "const DATA = " + json_str + ";\n  " + html_content[idx2:]
+            html_content = html_content[:idx1] + "window.DATA = " + json_str + ";\n  const DATA = window.DATA;\n  " + html_content[idx2:]
             
             # Update 'Last update on DD-MM-YYYY' badge with current date
             today_str = time.strftime("%d-%m-%Y")
