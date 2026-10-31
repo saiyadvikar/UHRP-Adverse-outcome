@@ -127,9 +127,9 @@ df_adv = df_raw.rename(columns=col_map).copy()
 pname_col = "Patient Name" if "Patient Name" in df_adv.columns else df_adv.columns[3]
 df_adv = df_adv[df_adv[pname_col].fillna("").astype(str).str.strip().ne("")].copy()
 
-# Filter out ONLY plain pre-eclampsia cases (User rule: retain severe preeclampsia, eclampsia, post partum eclampsia, severe anemia, SCD crisis)
-def is_plain_preeclampsia(diag_raw):
-    d = str(diag_raw).lower()
+# Filter out ONLY uncomplicated mild pre-eclampsia cases (User rule: retain severe preeclampsia, eclampsia, post partum eclampsia, severe anemia, SCD crisis, and any case where adverse outcome occurred such as SNCU admission, perinatal loss, or maternal complication)
+def is_uncomplicated_plain_pe(row):
+    d = str(row.get("Diagnosis", "")).lower()
     if any(k in d for k in ["scd", "sickle", "hbss", "anemia", "anaemia", "convulsion", "seizure", "fit", "status"]):
         return False
     if "severe" in d:
@@ -139,15 +139,28 @@ def is_plain_preeclampsia(diag_raw):
     clean_d = re.sub(r"\bpih\b", "", clean_d).strip()
     if "eclampsia" in clean_d:
         return False
-    if is_preeclamp:
-        return True
-    return False
+    if not is_preeclamp:
+        return False
 
-pe_mask = df_adv["Diagnosis"].apply(is_plain_preeclampsia) if "Diagnosis" in df_adv.columns else pd.Series([False]*len(df_adv))
+    b_raw = str(row.get("Baby status", row.get("Baby Birth status ", ""))).lower()
+    sncu_raw = str(row.get("Transfer of baby to sncu reason", row.get("Transfer of baby to sncu reason ", ""))).lower()
+    m_raw = str(row.get("Mother status", "")).lower()
+    neo_raw = str(row.get("Neonatal Death", "")).lower()
+
+    has_perinatal_loss = any(k in b_raw for k in ["iud", "iufd", "stillbirth", "msb", "fsb", "died", "death"]) or any(k in neo_raw for k in ["yes", "died", "death", "expired"])
+    has_sncu = any(k in sncu_raw for k in ["yes", "shift", "lbw", "gasping", "msl", "transfer", "obs", "distress"]) or "sncu" in b_raw
+    has_maternal_adverse = any(k in m_raw for k in ["died", "death", "refer", "indore"])
+
+    if has_perinatal_loss or has_sncu or has_maternal_adverse:
+        return False
+
+    return True
+
+pe_mask = df_adv.apply(is_uncomplicated_plain_pe, axis=1)
 filtered_pe_count = int(pe_mask.sum())
 df_adv = df_adv[~pe_mask].copy()
 df_adv["Sr No"] = range(1, len(df_adv) + 1)
-print(f"  Filtered out {filtered_pe_count} plain pre-eclampsia cases (retained {len(df_adv)} severe & critical adverse cases).")
+print(f"  Filtered out {filtered_pe_count} uncomplicated mild pre-eclampsia cases (retained {len(df_adv)} severe & critical adverse cases).")
 
 df_adv["mp_clean"] = df_adv.get("MPID", pd.Series([""] * len(df_adv))).apply(clean_val)
 df_adv["mob_clean"] = df_adv.get("mob num", pd.Series([""] * len(df_adv))).apply(clean_phone)
@@ -891,6 +904,16 @@ if os.path.exists(html_path):
             # Update 'Last update on DD-MM-YYYY' badge with current date
             today_str = time.strftime("%d-%m-%Y")
             html_content = re.sub(r"Last update on \d{2}-\d{2}-\d{4}", f"Last update on {today_str}", html_content)
+            
+            # Synchronize static HTML fallback placeholders
+            n_tot = json_payload["summary"]["total_cases"]
+            n_kh = json_payload["summary"]["khargone_cases"]
+            n_out = json_payload["summary"]["out_of_district_cases"]
+            html_content = re.sub(r"Showing all \d+ adverse cases", f"Showing all {n_tot} adverse cases", html_content)
+            html_content = re.sub(r'(id="kpi-total">)\d+(</div>)', rf'\g<1>{n_tot}\g<2>', html_content)
+            html_content = re.sub(r'(id="kpi-khargone">)\d+(</div>)', rf'\g<1>{n_kh}\g<2>', html_content)
+            html_content = re.sub(r'(id="kpi-out">)\d+(</div>)', rf'\g<1>{n_out}\g<2>', html_content)
+            html_content = re.sub(r'(id="linelist-counter"[^>]*>\s*)\d+\s+Patients(\s*</span>)', rf'\g<1>{n_tot} Patients\g<2>', html_content)
             
             with open(html_path, "w", encoding="utf-8") as f:
                 f.write(html_content)

@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Adverse outcome feedback | DH Khargone</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -163,7 +166,7 @@
 
         <div class="flex items-center justify-between pt-2.5 mt-2.5 border-t border-slate-200 text-xs">
           <span id="filter-status-badge" class="font-bold text-indigo-900 bg-indigo-50 px-2.5 py-1 rounded border border-indigo-200">
-            Showing all 67 adverse cases
+            Showing all 81 adverse cases
           </span>
           <button onclick="resetGlobalFilters()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">
             Reset Filters
@@ -206,17 +209,17 @@
       <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3 text-center">
         <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
           <div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Total Cases</div>
-          <div class="text-xl font-extrabold text-slate-900 mt-0.5" id="kpi-total">67</div>
+          <div class="text-xl font-extrabold text-slate-900 mt-0.5" id="kpi-total">81</div>
           <div class="text-[10px] text-slate-500" id="kpi-total-sub">Adverse Admissions</div>
         </div>
         <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
           <div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Khargone District</div>
-          <div class="text-xl font-extrabold text-emerald-700 mt-0.5" id="kpi-khargone">55</div>
+          <div class="text-xl font-extrabold text-emerald-700 mt-0.5" id="kpi-khargone">68</div>
           <div class="text-[10px] text-slate-500" id="kpi-khargone-sub">9 Health Blocks</div>
         </div>
         <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
           <div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Out of District</div>
-          <div class="text-xl font-extrabold text-amber-700 mt-0.5" id="kpi-out">12</div>
+          <div class="text-xl font-extrabold text-amber-700 mt-0.5" id="kpi-out">13</div>
           <div class="text-[10px] text-slate-500" id="kpi-out-sub">External Referrals</div>
         </div>
         <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
@@ -354,7 +357,7 @@
               <i class="fa-solid fa-print"></i> Print BMO Review Sheet
             </button>
             <span id="linelist-counter" class="text-xs font-semibold text-indigo-900 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-md">
-              56 Patients
+              81 Patients
             </span>
           </div>
         </div>
@@ -581,18 +584,18 @@
   <script>
     const DATA = {
   "summary": {
-    "total_cases": 76,
-    "khargone_cases": 64,
-    "out_of_district_cases": 12,
+    "total_cases": 81,
+    "khargone_cases": 68,
+    "out_of_district_cases": 13,
     "severe_anemia_count": 24,
-    "severe_preeclampsia_count": 31,
+    "severe_preeclampsia_count": 36,
     "eclampsia_count": 13,
     "scd_crisis_count": 8,
     "maternal_deaths": 1,
-    "stillbirths_iufd": 7,
+    "stillbirths_iufd": 8,
     "neonatal_deaths": 4,
-    "sncu_transfers": 16,
-    "hrp_matched_count": 28,
+    "sncu_transfers": 20,
+    "hrp_matched_count": 29,
     "months": [
       "August 2026",
       "July 2026",
@@ -651,24 +654,24 @@
   "block_summary": [
     {
       "assigned_block": "Barwaha",
-      "Total_Adverse_Cases": 8,
-      "Severe_Preeclampsia": 3,
+      "Total_Adverse_Cases": 9,
+      "Severe_Preeclampsia": 4,
       "Eclampsia": 2,
       "Severe_Anemia": 2,
       "Sickle_Cell_Crisis": 1,
       "Stillbirths_IUFD": 0,
-      "SNCU_Transfers": 3,
+      "SNCU_Transfers": 4,
       "Neonatal_Deaths": 1
     },
     {
       "assigned_block": "Bhagwanpura",
-      "Total_Adverse_Cases": 14,
-      "Severe_Preeclampsia": 3,
+      "Total_Adverse_Cases": 15,
+      "Severe_Preeclampsia": 4,
       "Eclampsia": 3,
       "Severe_Anemia": 7,
       "Sickle_Cell_Crisis": 1,
       "Stillbirths_IUFD": 4,
-      "SNCU_Transfers": 1,
+      "SNCU_Transfers": 2,
       "Neonatal_Deaths": 0
     },
     {
@@ -695,13 +698,13 @@
     },
     {
       "assigned_block": "Jhiranya",
-      "Total_Adverse_Cases": 11,
-      "Severe_Preeclampsia": 2,
+      "Total_Adverse_Cases": 12,
+      "Severe_Preeclampsia": 3,
       "Eclampsia": 2,
       "Severe_Anemia": 3,
       "Sickle_Cell_Crisis": 4,
       "Stillbirths_IUFD": 2,
-      "SNCU_Transfers": 6,
+      "SNCU_Transfers": 7,
       "Neonatal_Deaths": 2
     },
     {
@@ -717,12 +720,12 @@
     },
     {
       "assigned_block": "Khargone",
-      "Total_Adverse_Cases": 5,
-      "Severe_Preeclampsia": 3,
+      "Total_Adverse_Cases": 6,
+      "Severe_Preeclampsia": 4,
       "Eclampsia": 0,
       "Severe_Anemia": 2,
       "Sickle_Cell_Crisis": 0,
-      "Stillbirths_IUFD": 0,
+      "Stillbirths_IUFD": 1,
       "SNCU_Transfers": 0,
       "Neonatal_Deaths": 0
     },
@@ -1269,6 +1272,92 @@
     {
       "sr_no": 13,
       "mpid": "Not Available",
+      "patient_name": "Rohini/Tulsiram",
+      "mobile_number": "9303958763",
+      "admission_month": "August 2026",
+      "admission_date": "2026-08-14",
+      "stated_address": "Ambakhede",
+      "stated_subcentre": "Not Specified",
+      "stated_block": "Bhagwanpura",
+      "referred_from_raw": "chc Bhagwanpura",
+      "referred_facility": "CHC Bhagwanpura",
+      "referred_facility_block": "Bhagwanpura",
+      "diagnosis_raw": "preeclampsia",
+      "clinical_category": "Hypertensive Disorders (Severe Preeclampsia)",
+      "clinical_sub_type": "Severe Preeclampsia / PIH",
+      "mother_status": "live",
+      "mother_status_norm": "Survived / Discharged",
+      "baby_status": "live",
+      "baby_status_norm": "Live Birth",
+      "sncu_reason": "yes low birth weight",
+      "is_sncu_admission": true,
+      "is_khargone_district": true,
+      "assigned_district": "Khargone (West Nimar)",
+      "assigned_block": "Bhagwanpura",
+      "sub_location_area": "Bhagwanpura Block",
+      "assigned_subcentre": "Not Specified",
+      "assigned_village": "Ambakhede",
+      "hierarchy_match_status": "Matched (Bhagwanpura)",
+      "anc_registry_matched": false,
+      "anm_name": "Unrecorded (DH Direct Case)",
+      "anm_phone": "",
+      "cho_name": "Unrecorded (DH Direct Case)",
+      "cho_phone": "",
+      "asha_name": "Unrecorded (DH Direct Case)",
+      "frontline_workers": "Unrecorded / Direct DH Case",
+      "hrp_matched": false,
+      "hrp_flagged_category": "Not Flagged in HRP",
+      "pih_management_done": "None",
+      "inj_fcm_given": "No",
+      "blood_transfusion_units": "0",
+      "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
+    },
+    {
+      "sr_no": 14,
+      "mpid": "Not Available",
+      "patient_name": "Sharda/Arjun",
+      "mobile_number": "6266982864",
+      "admission_month": "October 2026",
+      "admission_date": "2026-10-19",
+      "stated_address": "barud teh bhikangao",
+      "stated_subcentre": "Not Specified",
+      "stated_block": "Missing",
+      "referred_from_raw": "chc sanawad refer",
+      "referred_facility": "CHC Sanawad",
+      "referred_facility_block": "Barwaha",
+      "diagnosis_raw": "preeclampsia",
+      "clinical_category": "Hypertensive Disorders (Severe Preeclampsia)",
+      "clinical_sub_type": "Severe Preeclampsia / PIH",
+      "mother_status": "live",
+      "mother_status_norm": "Survived / Discharged",
+      "baby_status": "live lbw",
+      "baby_status_norm": "Live Birth",
+      "sncu_reason": "shift to sncu low birth weight",
+      "is_sncu_admission": true,
+      "is_khargone_district": true,
+      "assigned_district": "Khargone (West Nimar)",
+      "assigned_block": "Barwaha",
+      "sub_location_area": "Barwaha / Sanawad Block",
+      "assigned_subcentre": "SHC Barud A",
+      "assigned_village": "Barud",
+      "hierarchy_match_status": "Matched (Barwaha)",
+      "anc_registry_matched": false,
+      "anm_name": "Shalu Jhile",
+      "anm_phone": "7987650045",
+      "cho_name": "",
+      "cho_phone": "",
+      "asha_name": "",
+      "frontline_workers": "ANM: Shalu Jhile (Ph: 7987650045)",
+      "hrp_matched": false,
+      "hrp_flagged_category": "Not Flagged in HRP",
+      "pih_management_done": "None",
+      "inj_fcm_given": "No",
+      "blood_transfusion_units": "0",
+      "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
+    },
+    {
+      "sr_no": 15,
+      "mpid": "Not Available",
       "patient_name": "Sayri/Aakash rawat",
       "mobile_number": "9424621556",
       "admission_month": "August 2026",
@@ -1310,7 +1399,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 14,
+      "sr_no": 16,
       "mpid": "26104354575",
       "patient_name": "Nandni yadav/Niraj",
       "mobile_number": "8269260499",
@@ -1353,7 +1442,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 15,
+      "sr_no": 17,
       "mpid": "Not Available",
       "patient_name": "Lalita/Gokul",
       "mobile_number": "9669242250",
@@ -1396,7 +1485,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 16,
+      "sr_no": 18,
       "mpid": "26143715130",
       "patient_name": "Subhadra/Mithun",
       "mobile_number": "9770607974",
@@ -1439,7 +1528,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 17,
+      "sr_no": 19,
       "mpid": "Not Available",
       "patient_name": "Jhali/Santosh",
       "mobile_number": "7499837452",
@@ -1482,7 +1571,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 18,
+      "sr_no": 20,
       "mpid": "2024263905",
       "patient_name": "Kiran/Golu",
       "mobile_number": "7724020514",
@@ -1525,7 +1614,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 19,
+      "sr_no": 21,
       "mpid": "Not Available",
       "patient_name": "Aasha/Ravindra",
       "mobile_number": "8817716431",
@@ -1568,7 +1657,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 20,
+      "sr_no": 22,
       "mpid": "Not Available",
       "patient_name": "Nibu/Ramlal",
       "mobile_number": "6263588735",
@@ -1611,7 +1700,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 21,
+      "sr_no": 23,
       "mpid": "Not Available",
       "patient_name": "Annu/Ditla",
       "mobile_number": "9196913316",
@@ -1654,7 +1743,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 22,
+      "sr_no": 24,
       "mpid": "Not Available",
       "patient_name": "Laxmi/Ravi",
       "mobile_number": "7804969625",
@@ -1697,7 +1786,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 23,
+      "sr_no": 25,
       "mpid": "Not Available",
       "patient_name": "Anita/Sunil",
       "mobile_number": "7987477254",
@@ -1740,7 +1829,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 24,
+      "sr_no": 26,
       "mpid": "26324083174",
       "patient_name": "Kavita/Prakash",
       "mobile_number": "8305604176",
@@ -1783,7 +1872,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 25,
+      "sr_no": 27,
       "mpid": "Not Available",
       "patient_name": "Binda/Prakash",
       "mobile_number": "9826077283",
@@ -1826,7 +1915,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 26,
+      "sr_no": 28,
       "mpid": "Not Available",
       "patient_name": "Surekha/Relsingh",
       "mobile_number": "6260124550",
@@ -1869,7 +1958,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 27,
+      "sr_no": 29,
       "mpid": "Not Available",
       "patient_name": "Pramila/Suresh",
       "mobile_number": "6262790035",
@@ -1912,7 +2001,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 28,
+      "sr_no": 30,
       "mpid": "26130639201",
       "patient_name": "Anita/ Ravindra",
       "mobile_number": "813353349",
@@ -1955,7 +2044,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 29,
+      "sr_no": 31,
       "mpid": "26118173402",
       "patient_name": "Roshni/Anil",
       "mobile_number": "9244004811",
@@ -1998,7 +2087,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 30,
+      "sr_no": 32,
       "mpid": "Not Available",
       "patient_name": "Ritu/Rajesh",
       "mobile_number": "9202364507",
@@ -2041,7 +2130,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 31,
+      "sr_no": 33,
       "mpid": "Not Available",
       "patient_name": "Dasri/Vijay",
       "mobile_number": "9022024997",
@@ -2084,7 +2173,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 32,
+      "sr_no": 34,
       "mpid": "26131456380",
       "patient_name": "Afrin/Sajid",
       "mobile_number": "9383730351",
@@ -2127,7 +2216,50 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 33,
+      "sr_no": 35,
+      "mpid": "26153730504",
+      "patient_name": "Pinki/Vishal",
+      "mobile_number": "9301535014",
+      "admission_month": "August 2026",
+      "admission_date": "2026-08-23",
+      "stated_address": "Saraymaldura dharampuri",
+      "stated_subcentre": "Not Specified",
+      "stated_block": "Maheshwar",
+      "referred_from_raw": "chc Maheshwar",
+      "referred_facility": "CHC Maheshwar",
+      "referred_facility_block": "Maheshwar",
+      "diagnosis_raw": "preeclampsia",
+      "clinical_category": "Hypertensive Disorders (Severe Preeclampsia)",
+      "clinical_sub_type": "Severe Preeclampsia / PIH",
+      "mother_status": "live",
+      "mother_status_norm": "Survived / Discharged",
+      "baby_status": "live",
+      "baby_status_norm": "Live Birth",
+      "sncu_reason": "yes low birth weight",
+      "is_sncu_admission": true,
+      "is_khargone_district": false,
+      "assigned_district": "Dhar",
+      "assigned_block": "Out of District",
+      "sub_location_area": "Dharampuri (Dhar)",
+      "assigned_subcentre": "Not Specified",
+      "assigned_village": "Saraymaldura dharampuri",
+      "hierarchy_match_status": "Out of District (Dhar)",
+      "anc_registry_matched": false,
+      "anm_name": "Out of District Staff",
+      "anm_phone": "",
+      "cho_name": "Out of District CHO",
+      "cho_phone": "",
+      "asha_name": "Out of District ASHA",
+      "frontline_workers": "ANM: Out of District Staff | CHO: Out of District CHO | ASHA: Out of District ASHA",
+      "hrp_matched": false,
+      "hrp_flagged_category": "Not Flagged in HRP",
+      "pih_management_done": "None",
+      "inj_fcm_given": "No",
+      "blood_transfusion_units": "0",
+      "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
+    },
+    {
+      "sr_no": 36,
       "mpid": "26113221735",
       "patient_name": "Shivani/praveen",
       "mobile_number": "951648965",
@@ -2170,7 +2302,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 34,
+      "sr_no": 37,
       "mpid": "Not Available",
       "patient_name": "Sonali/Arun",
       "mobile_number": "8103132803",
@@ -2213,7 +2345,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 35,
+      "sr_no": 38,
       "mpid": "Not Available",
       "patient_name": "Mamta/prakash",
       "mobile_number": "8839618950",
@@ -2256,7 +2388,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 36,
+      "sr_no": 39,
       "mpid": "26118457593",
       "patient_name": "manisha/nandkishore",
       "mobile_number": "6261634434",
@@ -2299,7 +2431,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 37,
+      "sr_no": 40,
       "mpid": "26120741074",
       "patient_name": "Pinki/mahendra",
       "mobile_number": "9238635279",
@@ -2342,7 +2474,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 38,
+      "sr_no": 41,
       "mpid": "202132489",
       "patient_name": "pinki/Ishram",
       "mobile_number": "8624931680",
@@ -2385,7 +2517,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 39,
+      "sr_no": 42,
       "mpid": "26161452585",
       "patient_name": "Sunita/Rahul",
       "mobile_number": "6260498199",
@@ -2428,7 +2560,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 40,
+      "sr_no": 43,
       "mpid": "26126632572",
       "patient_name": "Ritu/Sawan",
       "mobile_number": "9244691922",
@@ -2471,7 +2603,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 41,
+      "sr_no": 44,
       "mpid": "Not Available",
       "patient_name": "vimli/Inesh",
       "mobile_number": "6269906933",
@@ -2514,7 +2646,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 42,
+      "sr_no": 45,
       "mpid": "26103282824",
       "patient_name": "Margina/Javed",
       "mobile_number": "9753957619",
@@ -2557,7 +2689,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 43,
+      "sr_no": 46,
       "mpid": "26311490861",
       "patient_name": "Chenka/Aakash",
       "mobile_number": "9098202179",
@@ -2600,7 +2732,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 44,
+      "sr_no": 47,
       "mpid": "Not Available",
       "patient_name": "Jahadi/Ganesh",
       "mobile_number": "7879082713",
@@ -2643,7 +2775,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 45,
+      "sr_no": 48,
       "mpid": "23191404954",
       "patient_name": "Ayesha /aarif",
       "mobile_number": "9098877233",
@@ -2686,7 +2818,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 46,
+      "sr_no": 49,
       "mpid": "20211756171",
       "patient_name": "Manisha/Jitendra",
       "mobile_number": "9691718014",
@@ -2729,7 +2861,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 47,
+      "sr_no": 50,
       "mpid": "Not Available",
       "patient_name": "sanjana/kamlesh",
       "mobile_number": "9302052254",
@@ -2772,7 +2904,50 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 48,
+      "sr_no": 51,
+      "mpid": "26105897006",
+      "patient_name": "Anjum/Irfan",
+      "mobile_number": "7999648721",
+      "admission_month": "September 2026",
+      "admission_date": "2026-09-12",
+      "stated_address": "Talaye mohalla khargone",
+      "stated_subcentre": "Not Specified",
+      "stated_block": "khargone",
+      "referred_from_raw": "",
+      "referred_facility": "Direct DH Arrival (No Peripheral Referral)",
+      "referred_facility_block": "",
+      "diagnosis_raw": "preeclampsia",
+      "clinical_category": "Hypertensive Disorders (Severe Preeclampsia)",
+      "clinical_sub_type": "Severe Preeclampsia / PIH",
+      "mother_status": "live",
+      "mother_status_norm": "Survived / Discharged",
+      "baby_status": "IUD",
+      "baby_status_norm": "Stillbirth / IUFD",
+      "sncu_reason": "No",
+      "is_sncu_admission": false,
+      "is_khargone_district": true,
+      "assigned_district": "Khargone (West Nimar)",
+      "assigned_block": "Khargone",
+      "sub_location_area": "Ward No.10 (hanumaan mandir) (Register At Subcenter)",
+      "assigned_subcentre": "Ward No.10 (hanumaan mandir)",
+      "assigned_village": "Register At Subcenter",
+      "hierarchy_match_status": "Verified via HRP Registry",
+      "anc_registry_matched": true,
+      "anm_name": "Pramila Verma",
+      "anm_phone": "7747092190",
+      "cho_name": "",
+      "cho_phone": "",
+      "asha_name": "",
+      "frontline_workers": "ANM: Pramila Verma (Ph: 7747092190)",
+      "hrp_matched": true,
+      "hrp_flagged_category": "PIH / Hypertensive Disorder",
+      "pih_management_done": "nan",
+      "inj_fcm_given": "No",
+      "blood_transfusion_units": "0",
+      "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
+    },
+    {
+      "sr_no": 52,
       "mpid": "20212879529",
       "patient_name": "Sheetal/Balwant",
       "mobile_number": "9131954067",
@@ -2815,7 +2990,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 49,
+      "sr_no": 53,
       "mpid": "Not Available",
       "patient_name": "Nali/kishan",
       "mobile_number": "Not Available",
@@ -2858,7 +3033,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 50,
+      "sr_no": 54,
       "mpid": "Not Available",
       "patient_name": "Yasmin/Jafar",
       "mobile_number": "9713967111",
@@ -2901,7 +3076,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 51,
+      "sr_no": 55,
       "mpid": "Not Available",
       "patient_name": "Sundari Ramesh",
       "mobile_number": "6355851649",
@@ -2944,7 +3119,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 52,
+      "sr_no": 56,
       "mpid": "Not Available",
       "patient_name": "Revliya/ Bhagat",
       "mobile_number": "9893172244",
@@ -2987,7 +3162,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 53,
+      "sr_no": 57,
       "mpid": "Not Available",
       "patient_name": "Savitri/ Bisan",
       "mobile_number": "9238531511",
@@ -3030,7 +3205,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 54,
+      "sr_no": 58,
       "mpid": "2023553087",
       "patient_name": "Rupali/Rahul",
       "mobile_number": "7828835785",
@@ -3073,7 +3248,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 55,
+      "sr_no": 59,
       "mpid": "26137863283",
       "patient_name": "Gaytri/Sunil",
       "mobile_number": "8799549282",
@@ -3116,7 +3291,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 56,
+      "sr_no": 60,
       "mpid": "26106086130",
       "patient_name": "Seema/Govind",
       "mobile_number": "9926013708",
@@ -3159,7 +3334,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 57,
+      "sr_no": 61,
       "mpid": "20232197790",
       "patient_name": "Radha/Sumesh",
       "mobile_number": "9630698198",
@@ -3202,7 +3377,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 58,
+      "sr_no": 62,
       "mpid": "Not Available",
       "patient_name": "Haldi/Semu",
       "mobile_number": "9479458688",
@@ -3245,7 +3420,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 59,
+      "sr_no": 63,
       "mpid": "26181371180",
       "patient_name": "Sonu/Mahesh",
       "mobile_number": "7772870163",
@@ -3288,7 +3463,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 60,
+      "sr_no": 64,
       "mpid": "26323742587",
       "patient_name": "Pinki/Samriya",
       "mobile_number": "9098073071",
@@ -3331,7 +3506,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 61,
+      "sr_no": 65,
       "mpid": "Not Available",
       "patient_name": "Sangeeta/Vinod",
       "mobile_number": "9098215928",
@@ -3374,7 +3549,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 62,
+      "sr_no": 66,
       "mpid": "20239367473",
       "patient_name": "Rani/Rahul",
       "mobile_number": "6264114960",
@@ -3417,7 +3592,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 63,
+      "sr_no": 67,
       "mpid": "26322931610",
       "patient_name": "Mohbai/Tulsiram",
       "mobile_number": "6265532988",
@@ -3460,7 +3635,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 64,
+      "sr_no": 68,
       "mpid": "26143619304",
       "patient_name": "Vandana/Rahul",
       "mobile_number": "9303989143",
@@ -3503,7 +3678,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 65,
+      "sr_no": 69,
       "mpid": "23150867254",
       "patient_name": "Anita/Lalu",
       "mobile_number": "9023615617",
@@ -3546,7 +3721,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 66,
+      "sr_no": 70,
       "mpid": "Not Available",
       "patient_name": "Methli/Sukhlal",
       "mobile_number": "7803978298",
@@ -3589,7 +3764,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 67,
+      "sr_no": 71,
       "mpid": "26195430511",
       "patient_name": "Gulnaz/Tabrez",
       "mobile_number": "9009534488",
@@ -3632,7 +3807,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 68,
+      "sr_no": 72,
       "mpid": "Not Available",
       "patient_name": "Manju/Nawaram",
       "mobile_number": "8209623555",
@@ -3675,7 +3850,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 69,
+      "sr_no": 73,
       "mpid": "26151030384",
       "patient_name": "Anjali/vinod",
       "mobile_number": "7803835267",
@@ -3718,7 +3893,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 70,
+      "sr_no": 74,
       "mpid": "Not Available",
       "patient_name": "Hansa/Rajaram",
       "mobile_number": "8799623449",
@@ -3761,7 +3936,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 71,
+      "sr_no": 75,
       "mpid": "26208934331",
       "patient_name": "binki/Jitendra",
       "mobile_number": "8103877992",
@@ -3804,7 +3979,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 72,
+      "sr_no": 76,
       "mpid": "26198209018",
       "patient_name": "Ritu/Ravin",
       "mobile_number": "9770781718",
@@ -3847,7 +4022,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 73,
+      "sr_no": 77,
       "mpid": "26108860638",
       "patient_name": "Sanjana/Ajay",
       "mobile_number": "7354948268",
@@ -3890,7 +4065,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 74,
+      "sr_no": 78,
       "mpid": "Not Available",
       "patient_name": "Sayli/Anil",
       "mobile_number": "8251012687",
@@ -3933,7 +4108,7 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 75,
+      "sr_no": 79,
       "mpid": "26146254933",
       "patient_name": "Mayuri/Jogender",
       "mobile_number": "992642567",
@@ -3976,7 +4151,50 @@
       "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
     },
     {
-      "sr_no": 76,
+      "sr_no": 80,
+      "mpid": "Not Available",
+      "patient_name": "Sundri/Shivam",
+      "mobile_number": "8305492078",
+      "admission_month": "October 2026",
+      "admission_date": "2026-10-28",
+      "stated_address": "Mundiya post chiriya teh jhirniya",
+      "stated_subcentre": "Not Specified",
+      "stated_block": "jhirniya",
+      "referred_from_raw": "phc bistan",
+      "referred_facility": "PHC Bistan",
+      "referred_facility_block": "Bhagwanpura",
+      "diagnosis_raw": "preeclampsia",
+      "clinical_category": "Hypertensive Disorders (Severe Preeclampsia)",
+      "clinical_sub_type": "Severe Preeclampsia / PIH",
+      "mother_status": "live",
+      "mother_status_norm": "Survived / Discharged",
+      "baby_status": "live",
+      "baby_status_norm": "Live Birth",
+      "sncu_reason": "yes for observation",
+      "is_sncu_admission": true,
+      "is_khargone_district": true,
+      "assigned_district": "Khargone (West Nimar)",
+      "assigned_block": "Jhiranya",
+      "sub_location_area": "Jhiranya Block",
+      "assigned_subcentre": "SHC Mundiya",
+      "assigned_village": "Mundiya",
+      "hierarchy_match_status": "Matched (Jhiranya)",
+      "anc_registry_matched": false,
+      "anm_name": "Beena Waskale",
+      "anm_phone": "7987012342",
+      "cho_name": "Upasana chandel",
+      "cho_phone": "8225834930",
+      "asha_name": "",
+      "frontline_workers": "ANM: Beena Waskale (Ph: 7987012342) | CHO: Upasana chandel (Ph: 8225834930)",
+      "hrp_matched": false,
+      "hrp_flagged_category": "Not Flagged in HRP",
+      "pih_management_done": "None",
+      "inj_fcm_given": "No",
+      "blood_transfusion_units": "0",
+      "bmo_feedback_action": "1) Do community audit why condition was not resolved? 2) Ask in review meeting to MO and CHO why women presented with adverse outcome? 3) If found any system gaps try to resolve."
+    },
+    {
+      "sr_no": 81,
       "mpid": "26116529100",
       "patient_name": "Usa/umesh",
       "mobile_number": "9617261114",
@@ -4197,11 +4415,17 @@
       applyGlobalFilters();
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function initDashboard() {
       populateDynamicFilterOptions();
       applyGlobalFilters();
       switchTab('tab-overview');
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDashboard);
+    } else {
+      initDashboard();
+    }
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
