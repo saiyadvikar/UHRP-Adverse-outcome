@@ -1005,14 +1005,20 @@ if os.path.exists(html_path):
     with open(html_path, "r", encoding="utf-8") as f:
         html_content = f.read()
 
-    idx1 = html_content.find("const DATA =")
-    if idx1 == -1:
-        idx1 = html_content.find("window.DATA =")
-    if idx1 != -1:
-        idx2 = html_content.find("</script>", idx1)
-        if idx2 != -1:
-            json_str = json.dumps(json_payload, indent=2)
-            html_content = html_content[:idx1] + "window.DATA = " + json_str + ";\n  const DATA = window.DATA;\n  " + html_content[idx2:]
+    marker = "<!-- Raw Data Injection -->"
+    idx_m = html_content.find(marker)
+    if idx_m != -1:
+        idx_sc = html_content.find("<script", idx_m)
+        if idx_sc != -1:
+            idx1 = html_content.find(">", idx_sc) + 1
+            idx2 = html_content.find("</script>", idx1)
+            if idx2 != -1:
+                json_str = json.dumps(json_payload, indent=2)
+                html_content = (
+                    html_content[:idx1]
+                    + "\n    const DATA = " + json_str + ";\n    window.DATA = DATA;\n  "
+                    + html_content[idx2:]
+                )
             
             # Update 'Last update on DD-MM-YYYY' badge with current date
             today_str = time.strftime("%d-%m-%Y")
