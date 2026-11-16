@@ -646,6 +646,177 @@ def extract_12_anc_visits(anc_row):
     return visits if has_any else None
 
 # ─────────────────────────────────────────────────────────────
+# 3.6 EXTRACT HRP MANAGEMENT & DEMOGRAPHICS
+# ─────────────────────────────────────────────────────────────
+def clean_val(val, default="-"):
+    if pd.isna(val) or val is None:
+        return default
+    s = str(val).strip()
+    if s.lower() in ["", "nan", "none", "null", "nat", "no facility found"]:
+        return default
+    return s
+
+def format_date_safe(val):
+    if pd.isna(val) or val is None:
+        return "-"
+    s = str(val).strip()
+    if s.lower() in ["", "nan", "none", "nat"]:
+        return "-"
+    try:
+        dt = pd.to_datetime(s)
+        return dt.strftime("%d-%m-%Y")
+    except Exception:
+        return s
+
+def extract_hrp_details(hrp_row, anc_row=None):
+    ref = hrp_row if hrp_row is not None else anc_row
+    
+    # Demographics from ANMOL (HRP or ANC registry)
+    husband = clean_val(ref.get("Husband  Name") or ref.get("Husband Name") if ref else None, "Not Recorded")
+    age_raw = clean_val(ref.get("Age") if ref else None, "-")
+    age = re.sub(r"\.0$", "", age_raw)
+    parity = clean_val(ref.get("Parity") if ref else None, "-")
+    blood_group = clean_val(ref.get("Blood Group Name") if ref else None, "Not Recorded")
+    height = clean_val(ref.get("Height") if ref else None, "-")
+    pw_reg_date = format_date_safe(ref.get("PW Registration Date") if ref else None)
+    lmp_date = format_date_safe(ref.get("LMP Date") if ref else None)
+    edd_date = format_date_safe(ref.get("EDD Date") if ref else None)
+
+    anmol_name = clean_val(ref.get("Name of Pregnant Woman") if ref else None, "")
+    anmol_block = clean_val(ref.get("Health Block Name") if ref else None, "")
+    anmol_sc = clean_val(ref.get("Health Sub Centre Name") if ref else None, "")
+    anmol_vill = clean_val(ref.get("Village Name") if ref else None, "")
+    anmol_fac = clean_val(ref.get("Health Facility Name") if ref else None, "")
+
+    # Risk Factors & Management from HRP Linelist
+    risk_badges = []
+    is_doses = []
+    is_count = 0
+    fcm_given = "No"
+    fcm_fac = "-"
+    bt_units = "0"
+    pih_mgmt = "None Recorded"
+    gdm_mgmt = "No"
+    on_mnt = "No"
+    on_metformin = "No"
+    on_insulin = "No"
+    ppbs_val = "-"
+    gestosis_score = "-"
+    gestosis_managed = "No"
+    usg_status = "Not Done"
+    tagged_delivery_facility = "-"
+
+    if hrp_row is not None:
+        # 1. PIH / Hypertensive Disorders
+        if str(hrp_row.get("Identified with PIH (Yes/No)", "")).strip().lower() == "yes":
+            risk_badges.append("PIH / Hypertensive Disorder")
+            raw_pih = clean_val(hrp_row.get("PIH Management Done (If Yes in PIH) (Methyledopa/Labetalol/Inj. MgSO4/ Nifedipine)"), "None Recorded")
+            if raw_pih != "-": pih_mgmt = raw_pih
+
+        # 2. Anemia Status
+        if str(hrp_row.get("If severe anemia (Yes/No)", "")).strip().lower() == "yes":
+            risk_badges.append("Severe Anemia (Hb < 7 g/dL)")
+        elif str(hrp_row.get("If moderate anemia (Yes/No)", "")).strip().lower() == "yes":
+            risk_badges.append("Moderate Anemia (Hb 7-9.9 g/dL)")
+
+        # 3. Sickle Cell Disease
+        scd_val = clean_val(hrp_row.get("Result of sickle cell test (1. Trait 2. Disease  3. Thalassemia 4. Sickle beta Thalassemia 5.Negative 6. Not done)"), "")
+        if any(k in scd_val.lower() for k in ["trait", "disease", "thalassemia", "sickle"]):
+            risk_badges.append(f"Sickle Cell: {scd_val}")
+
+        # 4. GDM
+        if str(hrp_row.get("GDM Positive", "")).strip().lower() == "yes":
+            risk_badges.append("Gestational Diabetes (GDM Positive)")
+
+        # 5. Previous LSCS
+        if str(hrp_row.get("Previous LSCS", "")).strip().lower() == "yes":
+            risk_badges.append("Previous LSCS")
+
+        # 6. Past Illness & Complications
+        if str(hrp_row.get("Past History of Illness (Yes/No)", "")).strip().lower() == "yes":
+            ill = clean_val(hrp_row.get("Past Illness History"), "")
+            risk_badges.append(f"Past Illness: {ill}" if ill else "Past Medical Illness")
+
+        if str(hrp_row.get("Complication in Last Pregnancy (Yes/No)", "")).strip().lower() == "yes":
+            comp = clean_val(hrp_row.get("Last Pregnancy Complications"), "")
+            risk_badges.append(f"Past Complication: {comp}" if comp else "Past Pregnancy Complication")
+
+        # 7. Gestosis Score
+        g_sc = clean_val(hrp_row.get("Gestosis Score"), "")
+        if g_sc and g_sc != "-":
+            gestosis_score = g_sc
+            risk_badges.append(f"Gestosis Score: {g_sc}")
+
+        # 8. Iron Sucrose Doses (1 to 5)
+        for i in range(1, 6):
+            d_raw = hrp_row.get(f"Iron sucrose dose {i} (Date)")
+            d_fmt = format_date_safe(d_raw)
+            if d_fmt != "-":
+                is_doses.append({"dose": i, "date": d_fmt, "given": True})
+                is_count += 1
+            else:
+                is_doses.append({"dose": i, "date": "-", "given": False})
+
+        # 9. Inj FCM
+        if str(hrp_row.get("Inj FCM given (Yes/No)", "")).strip().lower() == "yes":
+            fcm_given = "Yes"
+            fcm_fac = clean_val(hrp_row.get("Facility Name where FCM given"), "-")
+
+        # 10. Blood Transfusions (BT units)
+        bt_raw = clean_val(hrp_row.get("Number of Blood transfusion units (If BT Given Only)"), "0")
+        bt_clean = re.sub(r"\.0$", "", bt_raw)
+        if bt_clean not in ["0", "-"]:
+            bt_units = bt_clean
+
+        # 11. GDM Management
+        gdm_mgmt = clean_val(hrp_row.get("GDM Mangement"), "No")
+        on_mnt = clean_val(hrp_row.get("On MNT"), "No")
+        on_metformin = clean_val(hrp_row.get("On Metformin"), "No")
+        on_insulin = clean_val(hrp_row.get("On Insulin"), "No")
+        ppbs_val = clean_val(hrp_row.get("PPBS value"), "-")
+        gestosis_managed = clean_val(hrp_row.get("Gestosis Managed"), "No")
+
+        # 12. USG
+        for k in hrp_row.keys():
+            if "usg" in k.lower():
+                usg_status = clean_val(hrp_row.get(k), "Not Done")
+                break
+
+        tagged_delivery_facility = clean_val(hrp_row.get("Tagged facility for delivery"), "-")
+
+    return {
+        "anmol_patient_name": anmol_name,
+        "husband_name": husband,
+        "age": age,
+        "parity": parity,
+        "blood_group": blood_group,
+        "height": height,
+        "pw_registration_date": pw_reg_date,
+        "lmp_date": lmp_date,
+        "edd_date": edd_date,
+        "anmol_block": anmol_block,
+        "anmol_subcentre": anmol_sc,
+        "anmol_village": anmol_vill,
+        "anmol_facility": anmol_fac,
+        "hrp_risk_badges": risk_badges,
+        "iron_sucrose_doses": is_doses,
+        "iron_sucrose_total_given": is_count,
+        "inj_fcm_given": fcm_given,
+        "fcm_facility": fcm_fac,
+        "blood_transfusion_units": bt_units,
+        "pih_management": pih_mgmt,
+        "gdm_management": gdm_mgmt,
+        "on_mnt": on_mnt,
+        "on_metformin": on_metformin,
+        "on_insulin": on_insulin,
+        "ppbs_value": ppbs_val,
+        "gestosis_score": gestosis_score,
+        "gestosis_managed": gestosis_managed,
+        "usg_status": usg_status,
+        "tagged_delivery_facility": tagged_delivery_facility
+    }
+
+# ─────────────────────────────────────────────────────────────
 # 4. CLINICAL & LOCATION ENRICHMENT
 # ─────────────────────────────────────────────────────────────
 def categorize_clinical(diag_raw):
@@ -1018,6 +1189,9 @@ for idx, r in df_adv.iterrows():
             except Exception:
                 anc_lmp = str(raw_lmp).strip()
 
+    # Extract Full ANMOL Demographics & HRP Management Details
+    hrp_details = extract_hrp_details(hrp_match, anc_match)
+
     record = {
         "sr_no": sr,
         "mpid": mp if mp else "Not Available",
@@ -1049,7 +1223,7 @@ for idx, r in df_adv.iterrows():
         "hierarchy_match_status": match_status,
         "anc_registry_matched": anc_match is not None,
         "anc_records": anc_records,
-        "anc_lmp_date": anc_lmp,
+        "anc_lmp_date": anc_lmp or hrp_details.get("lmp_date", "-"),
         "anm_name": anm_name,
         "anm_phone": anm_phone,
         "cho_name": cho_name,
@@ -1061,6 +1235,7 @@ for idx, r in df_adv.iterrows():
         "pih_management_done": pih_mgmt,
         "inj_fcm_given": fcm_given,
         "blood_transfusion_units": bt_units,
+        **hrp_details,
         "bmo_feedback_action": " ".join(bmo_actions)
     }
     enriched_records.append(record)
