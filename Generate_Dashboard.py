@@ -542,6 +542,109 @@ elif os.path.exists(lookup_cache_path):
 else:
     anc_by_mp, anc_by_mob, hrp_by_mp, hrp_by_mob = {}, {}, {}, {}
 
+
+# ─────────────────────────────────────────────────────────────
+# 3.5 EXTRACT 12 ANC VISITS (Date, Hb, BP, GA from LMP)
+# ─────────────────────────────────────────────────────────────
+def extract_12_anc_visits(anc_row):
+    if not anc_row:
+        return None
+    raw_lmp = anc_row.get("LMP Date")
+    lmp_dt = None
+    if pd.notna(raw_lmp) and str(raw_lmp).strip() not in ["", "nan", "NaT"]:
+        try:
+            lmp_dt = pd.to_datetime(raw_lmp)
+        except Exception:
+            lmp_dt = None
+
+    visits = []
+    has_any = False
+    for i in range(12):
+        suffix = f".{i}" if i > 0 else ""
+        date_col = f"ANC Visit Date{suffix}"
+        bp_col = f"BP (Systolic/Diastolic){suffix}"
+        hb_col = f"Hb{suffix}"
+        fh_col = f"Fundal Height /Size of the Uterus{suffix}"
+
+        raw_date = anc_row.get(date_col)
+        raw_bp = anc_row.get(bp_col)
+        raw_hb = anc_row.get(hb_col)
+        raw_fh = anc_row.get(fh_col)
+
+        has_rec = False
+        date_str = "Not Recorded"
+        ga_str = "-"
+        hb_val = "-"
+        hb_alert = False
+        bp_val = "-"
+        bp_alert = False
+
+        v_dt = None
+        if pd.notna(raw_date) and str(raw_date).strip() not in ["", "nan", "NaT", "None"]:
+            try:
+                v_dt = pd.to_datetime(raw_date)
+                date_str = v_dt.strftime("%d-%m-%Y")
+                has_rec = True
+                has_any = True
+            except Exception:
+                s = str(raw_date).strip()
+                if s:
+                    date_str = s
+                    has_rec = True
+                    has_any = True
+
+        if has_rec:
+            if v_dt is not None and lmp_dt is not None:
+                days = (v_dt - lmp_dt).days
+                if days >= 0:
+                    w = days // 7
+                    d = days % 7
+                    ga_str = f"{w}w {d}d"
+                else:
+                    ga_str = "Invalid Date"
+            elif pd.notna(raw_fh) and str(raw_fh).strip() not in ["", "nan", "None"]:
+                ga_str = f"{str(raw_fh).strip()}w (Fundal)"
+            else:
+                ga_str = "LMP Missing" if lmp_dt is None else "GA Pending"
+
+            if pd.notna(raw_hb) and str(raw_hb).strip() not in ["", "nan", "None"]:
+                try:
+                    hb_num = float(re.findall(r"[\d\.]+", str(raw_hb))[0])
+                    hb_val = f"{hb_num:.1f}"
+                    if hb_num < 7.0:
+                        hb_alert = True
+                except Exception:
+                    hb_val = str(raw_hb).strip()
+            else:
+                hb_val = "Not Done"
+
+            if pd.notna(raw_bp) and str(raw_bp).strip() not in ["", "nan", "None"]:
+                bp_str = str(raw_bp).strip()
+                bp_val = bp_str
+                bp_parts = re.findall(r"\d+", bp_str)
+                if len(bp_parts) >= 2:
+                    try:
+                        sys_p = int(bp_parts[0])
+                        dia_p = int(bp_parts[1])
+                        if sys_p >= 140 or dia_p >= 90:
+                            bp_alert = True
+                    except Exception:
+                        pass
+            else:
+                bp_val = "Not Done"
+
+        visits.append({
+            "visit_no": i + 1,
+            "has_record": has_rec,
+            "date": date_str,
+            "ga": ga_str,
+            "hb": hb_val,
+            "hb_alert": hb_alert,
+            "bp": bp_val,
+            "bp_alert": bp_alert
+        })
+    return visits if has_any else None
+
 # ─────────────────────────────────────────────────────────────
 # 4. CLINICAL & LOCATION ENRICHMENT
 # ─────────────────────────────────────────────────────────────
@@ -903,6 +1006,18 @@ for idx, r in df_adv.iterrows():
         "3) If found any system gaps try to resolve."
     ]
 
+    # Extract 12 ANC Visits if matched
+    anc_records = None
+    anc_lmp = ""
+    if anc_match is not None:
+        anc_records = extract_12_anc_visits(anc_match)
+        raw_lmp = anc_match.get("LMP Date")
+        if pd.notna(raw_lmp) and str(raw_lmp).strip() not in ["", "nan", "NaT"]:
+            try:
+                anc_lmp = pd.to_datetime(raw_lmp).strftime("%d-%m-%Y")
+            except Exception:
+                anc_lmp = str(raw_lmp).strip()
+
     record = {
         "sr_no": sr,
         "mpid": mp if mp else "Not Available",
@@ -933,6 +1048,8 @@ for idx, r in df_adv.iterrows():
         "assigned_village": clean_village(assigned_village if assigned_village else (vill_raw if vill_raw else addr)),
         "hierarchy_match_status": match_status,
         "anc_registry_matched": anc_match is not None,
+        "anc_records": anc_records,
+        "anc_lmp_date": anc_lmp,
         "anm_name": anm_name,
         "anm_phone": anm_phone,
         "cho_name": cho_name,
